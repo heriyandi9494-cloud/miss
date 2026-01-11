@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta charset="UTF-8">
+  <title>Robot Finance UI</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Robot Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      font-family: 'Share Tech Mono', monospace;
+      color: #e5f0ff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .card {
+      background: #020617;
+      border: 1px solid #1e293b;
+      box-shadow: 0 0 15px rgba(56,189,248,0.1);
+    }
+
+    h6 {
+      color: #38bdf8;
+    }
+
+    .form-control {
+      background: #020617;
+      color: #e5f0ff;
+      border: 1px solid #1e293b;
+    }
+
+    .form-control:focus {
+      background: #020617;
+      border-color: #38bdf8;
+      box-shadow: 0 0 10px rgba(56,189,248,.6);
+      color: #fff;
+    }
+/* ===== FIRE TABLE BORDER ===== */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #ff4500;
+  box-shadow:
+    0 0 10px rgba(255,69,0,.4),
+    inset 0 0 10px rgba(255,69,0,.2);
+  animation: firePulse 2s infinite alternate;
+}
+
+th, td {
+  border: 1px solid rgba(255,120,0,.6);
+}
+
+/* Header lebih panas */
+thead th {
+  color: #ffae42;
+  text-shadow:
+    0 0 6px rgba(255,140,0,.8),
+    0 0 12px rgba(255,69,0,.6);
+}
+
+/* Hover api makin liar */
+tbody tr:hover td {
+  border-color: #ff2400;
+  box-shadow:
+    inset 0 0 12px rgba(255,69,0,.8);
+}
+
+/* Api berdenyut */
+@keyframes firePulse {
+  0% {
+    box-shadow:
+      0 0 6px rgba(255,80,0,.4),
+      inset 0 0 6px rgba(255,80,0,.2);
+  }
+  100% {
+    box-shadow:
+      0 0 14px rgba(255,140,0,.8),
+      inset 0 0 14px rgba(255,69,0,.4);
+  }
+}
+    .total {
+      color: #22d3ee;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(34,211,238,.7);
+    }
+
+    .btn {
+      font-size: 12px;
+    }
+    html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+.container-fluid {
+  min-height: 100vh;
+}
+
+/* Card tabel full tinggi */
+.card.table-card {
+  height: calc(100vh - 260px); /* sisa layar setelah form */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Table wrapper WAJIB scroll */
+.table-responsive {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+/* Android table tuning */
+table {
+  min-width: 600px; /* cegah kolom gepeng */
+}
+
+th, td {
+  white-space: nowrap;
+  padding: 8px 6px;
+  font-size: 12px;
+}
+
+/* Tombol aksi rapat */
+td:last-child {
+  min-width: 80px;
+}
+/* Responsif untuk tampilan lebih kecil */
+@media (max-width: 576px) {
+  h6 {
+    font-size: 14px;
+  }
+
+  .btn {
+    font-size: 10px;
+  }
+
+  .table th, .table td {
+    font-size: 10px;
+  }
+
+  /* Card bonus, mistake, bersih lebih besar */
+  .card {
+    font-size: 14px;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+<div class="container-fluid px-2 mt-3 mb-5">
+
+  <!-- FORM -->
+  <div class="card p-3 mb-4">
+    <h6>INPUT BONUSMU</h6>
+
+    <div class="row g-2">
+      <div class="col-12">
+        <input type="date" id="tanggal" class="form-control">
+      </div>
+      <div class="col-6">
+        <input type="number" id="bonus" class="form-control" placeholder="BONUS">
+      </div>
+      <div class="col-6">
+        <input type="number" id="mistake" class="form-control" placeholder="MISTAKE">
+      </div>
+      <div class="col-12 d-grid">
+        <button class="btn btn-outline-info mt-2" onclick="simpanData()">💾 SIMPAN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+<div class="card p-2 table-card">
+    <h6> DATA LOG</h6>
+
+    <div class="table-responsive">
+      <table class="table table-dark table-bordered align-middle text-center">
+        <thead>
+          <tr>
+            <th>TGL</th>
+            <th>BONUS</th>
+            <th>MISS</th>
+            <th>TOTAL</th>
+            <th>AKSI</th>
+          </tr>
+        </thead>
+        <tbody id="dataTable"></tbody>
+      </table>
+    </div>
+  </div>
+  <!-- CARD BONUS, MISTAKE, TOTAL -->
+  <div class="row g-2 mt-4">
+    <div class="col-md-4">
+      <div class="card p-3 bg-primary text-white">
+        <h6>💰 Total BONUS</h6>
+        <p id="totalBonus" class="h4">Rp 0</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 bg-danger text-white">
+        <h6>❌ Total MISTAKE</h6>
+        <p id="totalMistake" class="h4">Rp 0</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card p-3 bg-teal text-white">
+        <h6>✅ Total BERSIH</h6>
+        <p id="totalBersih" class="h4">Rp 0</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+<script>
+  // 🔥 CONFIG FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyCMMvC6NB9_cNDZwcmGW7cV5H6U12_bzgA",
+  authDomain: "miss-3b87b.firebaseapp.com",
+  projectId: "miss-3b87b",
+  storageBucket: "miss-3b87b.firebasestorage.app",
+  messagingSenderId: "979500295174",
+  appId: "1:979500295174:web:99f437e07206439a41cf87",
+  measurementId: "G-VL75V68KS2"
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database().ref("robotFinance");
+
+  const tanggalEl = document.getElementById("tanggal");
+  const bonusEl = document.getElementById("bonus");
+  const mistakeEl = document.getElementById("mistake");
+
+  function rupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0
+    }).format(angka);
+  }
+
+// SIMPAN DATA
+function simpanData() {
+  const tanggal = tanggalEl.value;
+  const bonus = parseInt(bonusEl.value) || 0;
+  const mistake = parseInt(mistakeEl.value) || 0;
+
+  if (!tanggal) return alert("TANGGAL WAJIB!");
+
+  db.push({
+    tanggal,
+    bonus,
+    mistake,
+    total: bonus - mistake
+  });
+
+  bonusEl.value = "";
+  mistakeEl.value = "";
+}
+
+ // LOAD & RENDER REALTIME
+db.on("value", snapshot => {
+  const tbody = document.getElementById("dataTable");
+  tbody.innerHTML = "";
+
+  let totalBonus = 0;
+  let totalMistake = 0;
+  let totalBersih = 0;
+
+  snapshot.forEach(child => {
+    const d = child.val();
+    const id = child.key;
+
+    // Menghitung total
+    totalBonus += d.bonus;
+    totalMistake += d.mistake;
+    totalBersih += d.total;
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${d.tanggal}</td>
+        <td>${rupiah(d.bonus)}</td>
+        <td>${rupiah(d.mistake)}</td>
+        <td class="total">${rupiah(d.total)}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-warning" onclick="editData('${id}', ${d.bonus}, ${d.mistake})">✏</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="hapusData('${id}')">✖</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  // Update card total BONUS, MISTAKE, dan TOTAL
+  document.getElementById("totalBonus").textContent = rupiah(totalBonus);
+  document.getElementById("totalMistake").textContent = rupiah(totalMistake);
+  document.getElementById("totalBersih").textContent = rupiah(totalBersih);
+});
+
+// EDIT DATA
+function editData(id, bonus, mistake) {
+  const b = prompt("BONUS:", bonus);
+  const m = prompt("MISTAKE:", mistake);
+
+  if (b !== null && m !== null) {
+    db.child(id).update({
+      bonus: parseInt(b),
+      mistake: parseInt(m),
+      total: parseInt(b) - parseInt(m)
+    });
+  }
+}
+
+// HAPUS DATA
+function hapusData(id) {
+  if (!confirm("HAPUS DATA?")) return;
+  db.child(id).remove();
+}
+
+</script>
+
+
+</body>
+</html>
